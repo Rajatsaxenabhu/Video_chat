@@ -1,0 +1,13 @@
+fastapi[standard]
+uvicorn
+pydantic
+sqlalchemy
+tortoise-orm
+databases
+python-dotenv
+passlib
+pyjwt
+asyncpg
+motor
+bcrypt
+passlib
