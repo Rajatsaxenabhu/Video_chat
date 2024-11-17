@@ -49,21 +49,15 @@ async def signup(request: Request, user: UserCreate, db: Session = Depends(get_d
     if existing_user is not None:
         raise HTTPException(status_code=400, detail="User already exists")
     hashed_password = pwd_context.hash(user.password)
-
-    # Create the new user and add it to the database
     new_user = User(username=user.username, email=user.email, password=hashed_password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)  # Refresh to get the updated object with id
 
-    # Convert the user object to a dictionary, excluding sensitive data
     user_dict = {c.key: getattr(new_user, c.key) for c in class_mapper(User).columns}
-    
-    # Remove password from the response
+
     user_dict.pop("password", None)
-
     access_token = create_access_token(data={"sub": new_user.username})
-
     # Return the user data along with the access token
     return JSONResponse(content={"user": user_dict, "access_token": access_token, "token_type": "bearer"}, status_code=201)
 

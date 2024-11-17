@@ -2,5 +2,5 @@
 venv\Scripts\activate
 uvicorn main:app --reload
 
+docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -p 3306:3306 -d mysql:latest
 
-docker run -d  --name my_postgres_container  -e POSTGRES_USER=myuser   -e POSTGRES_PASSWORD=password -e POSTGRES_DB=postgres -p 5432:5432 postgres:latest

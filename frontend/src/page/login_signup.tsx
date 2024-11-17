@@ -1,46 +1,55 @@
 import React, { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
-
+import {useDispatch} from "react-redux";
+import { setCredentials } from "../redux/slice/authslice";
 type FormType = "login" | "signup";
+
+interface FormData {
+  username: string;
+  email?: string; 
+  password: string;
+}
 
 const AuthForm: React.FC = () => {
   const [formType, setFormType] = useState<FormType>("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  // Initialize React Hook Form
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
   // Toggle between login and signup
   const toggleForm = () => {
     setFormType((prevType) => (prevType === "login" ? "signup" : "login"));
-    setError(null); // Reset error on form switch
+    setError(null); // Reset error when toggling forms
   };
 
-  // Handle form submission (login or signup)
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  // Handle form submission
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     setError(null); // Reset error on each submit
-    setLoading(true); // Set loading state to true
+    setLoading(true); // Start loading
 
-    const apiUrl = formType === "login" ? "/api/login" : "/api/signup";
-    const payload = { email, password };
+    const apiUrl = formType === "login" ? "http://localhost:8000/auth/login" : "http://localhost:8000/auth/signup";
+    const payload = {
+      username: data.username,
+      email: formType === "signup" ? data.email : undefined,
+      password: data.password,
+    };
 
-    if (formType === "signup" && password !== confirmPassword) {
-      setError("Passwords do not match.");
-      setLoading(false);
-      return;
-    }
 
     try {
       const response = await axios.post(apiUrl, payload);
-      console.log(response.data); // Handle success (e.g., store tokens, redirect)
-      // Reset form fields or redirect user to a different page
+      if (response.status === 200) {
+        dispatch(setCredentials({
+        sender_name: response.data.sender_name,
+        sender_id: response.data.sender_id,}));
+      }      
     } catch (err: any) {
       setError(err?.response?.data?.message || "An error occurred.");
     } finally {
-      setLoading(false); // Turn off loading state
+      setLoading(false); 
     }
   };
 
@@ -57,22 +66,42 @@ const AuthForm: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium text-gray-600">
+              Username
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
+              type="text"
+              id="username"
+              placeholder="Enter your username"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              {...register("username", { required: "Username is required" })}
             />
+            {errors.username && <p className="text-red-500 text-xs">{errors.username.message}</p>}
           </div>
+
+          {formType === "signup" && (
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-600">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Please enter a valid email",
+                  },
+                })}
+              />
+              {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+            </div>
+          )}
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-600">
@@ -81,39 +110,19 @@ const AuthForm: React.FC = () => {
             <input
               type="password"
               id="password"
-              name="password"
               placeholder="Enter your password"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              {...register("password", { required: "Password is required" })}
             />
+            {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
           </div>
 
-          {formType === "signup" && (
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-600">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-          )}
+          
 
           <button
             type="submit"
             className={`w-full px-4 py-2 text-white font-bold rounded-md focus:outline-none focus:ring-2 ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
             }`}
             disabled={loading}
           >
