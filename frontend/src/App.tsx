@@ -1,13 +1,9 @@
-
-
-import './App.css'
-import ChatApp from './components/chatapp'
-
+import AuthForm from "./page/login_signup"
 function App() {
 
   return (
     <>
-    <ChatApp/>
+    <AuthForm/>
     </>
   )
 }
