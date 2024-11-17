@@ -44,7 +44,7 @@ class UserCheck(BaseModel):
 
 @auth_router.post("/signup")
 async def signup(request: Request, user: UserCreate, db: Session = Depends(get_db)):
-    val = select(User).where((User.username == user.username) | (User.email == user.email))
+    val = select(User).where((User.email == user.email))
     existing_user = db.execute(val).scalar()
     if existing_user is not None:
         raise HTTPException(status_code=400, detail="User already exists")

@@ -13,6 +13,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+
 app.include_router(auth_router,prefix="/auth")
 
 app.include_router(chat_app,prefix="/ws")
