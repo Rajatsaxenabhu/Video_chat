@@ -15,5 +15,4 @@ app.add_middleware(
 
 
 app.include_router(auth_router,prefix="/auth")
-
 app.include_router(chat_app,prefix="/ws")

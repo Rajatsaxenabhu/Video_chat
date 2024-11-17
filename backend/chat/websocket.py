@@ -16,6 +16,7 @@ async def chat(websocket: WebSocket, user_id: str):
             message_data = json.loads(data)
             target_user_id = message_data.get("target_user_id")
             message = message_data.get("message")
+            print(target_user_id, message)
 
             if target_user_id and message:
                 if manager.is_connected(target_user_id):
