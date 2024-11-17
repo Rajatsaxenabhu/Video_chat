@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
-import {useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { setCredentials } from "../redux/slice/authslice";
+
 type FormType = "login" | "signup";
 
 interface FormData {
-  username: string;
-  email?: string; 
+  username?: string; // Username is optional for login
+  email: string;
   password: string;
 }
 
@@ -16,6 +18,7 @@ const AuthForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Initialize React Hook Form
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
@@ -32,24 +35,25 @@ const AuthForm: React.FC = () => {
     setLoading(true); // Start loading
 
     const apiUrl = formType === "login" ? "http://localhost:8000/auth/login" : "http://localhost:8000/auth/signup";
-    const payload = {
-      username: data.username,
-      email: formType === "signup" ? data.email : undefined,
-      password: data.password,
-    };
 
+    const payload = formType === "login"
+      ? { email: data.email, password: data.password } // login uses email and password
+      : { username: data.username, email: data.email, password: data.password }; // signup uses username, email, and password
 
     try {
       const response = await axios.post(apiUrl, payload);
-      if (response.status === 200) {
+      console.log(response)
+      if (response.status === 200 || response.status === 201) {
         dispatch(setCredentials({
-        sender_name: response.data.sender_name,
-        sender_id: response.data.sender_id,}));
-      }      
+          sender_name: response.data.user.username,
+          sender_id: response.data.user.id,
+        }));
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       setError(err?.response?.data?.message || "An error occurred.");
     } finally {
-      setLoading(false); 
+      setLoading(false); // Stop loading
     }
   };
 
@@ -67,42 +71,45 @@ const AuthForm: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Email Field for Both Login and Signup */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-600">
-              Username
+            <label htmlFor="email" className="block text-sm font-medium text-gray-600">
+              Email
             </label>
             <input
-              type="text"
-              id="username"
-              placeholder="Enter your username"
+              type="email"
+              id="email"
+              placeholder="Enter your email"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              {...register("username", { required: "Username is required" })}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                  message: "Please enter a valid email",
+                },
+              })}
             />
-            {errors.username && <p className="text-red-500 text-xs">{errors.username.message}</p>}
+            {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
           </div>
 
+          {/* Username Field (Only Visible for Signup) */}
           {formType === "signup" && (
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-600">
-                Email
+              <label htmlFor="username" className="block text-sm font-medium text-gray-600">
+                Username
               </label>
               <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
+                type="text"
+                id="username"
+                placeholder="Enter your username"
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                    message: "Please enter a valid email",
-                  },
-                })}
+                {...register("username", { required: "Username is required" })}
               />
-              {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+              {errors.username && <p className="text-red-500 text-xs">{errors.username.message}</p>}
             </div>
           )}
 
+          {/* Password Field for Both Login and Signup */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-600">
               Password
@@ -117,8 +124,7 @@ const AuthForm: React.FC = () => {
             {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
           </div>
 
-          
-
+          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full px-4 py-2 text-white font-bold rounded-md focus:outline-none focus:ring-2 ${
