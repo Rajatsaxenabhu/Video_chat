@@ -9,16 +9,14 @@ from typing import List
 import jwt
 from datetime import datetime, timedelta
 from sqlalchemy.orm import class_mapper
-
+from fastapi.security import OAuth2PasswordBearer
 auth_router = APIRouter()
+from .helper import verify_jwt_token, create_access_token
 
-# Secret key for encoding and decoding JWTs
 SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"  # You can use other algorithms like RS256 for more security
+ALGORITHM = "HS256" 
 
-# Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # Database Dependency
 def get_db():
     db = Session(engine)
@@ -32,17 +30,17 @@ class UserCreate(BaseModel):
     username: str
     email: str
     password: str
+    class Config:
+        orm_mode = True
 
+
+class UserCheck(BaseModel):
+    email: str
+    password: str
     class Config:
         orm_mode = True
 
 # Function to generate a JWT token
-def create_access_token(data: dict, expires_delta: timedelta = timedelta(hours=1)):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 @auth_router.post("/signup")
 async def signup(request: Request, user: UserCreate, db: Session = Depends(get_db)):
@@ -70,12 +68,12 @@ async def signup(request: Request, user: UserCreate, db: Session = Depends(get_d
     return JSONResponse(content={"user": user_dict, "access_token": access_token, "token_type": "bearer"}, status_code=201)
 
 @auth_router.post("/login")
-async def login(request: Request, user: UserCreate, db: Session = Depends(get_db)):
-    val = select(User).where((User.username == user.username) | (User.email == user.email))
+async def login(request: Request, user: UserCheck, db: Session = Depends(get_db)):
+    val = select(User).where((User.email == user.email))
     existing_user = db.execute(val).scalar()
     if existing_user is None:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not pwd_context.verify(user.password, existing_user.password):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token = create_access_token(data={"sub": existing_user.username})
     return JSONResponse(content={"access_token": access_token, "token_type": "bearer"}, status_code=200)

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
 
-engine = create_engine("postgresql://myuser:password@localhost:5432/postgres")
+engine = create_engine("sqlite:///connect.db")
 
 
 class Base(DeclarativeBase):
@@ -20,8 +20,6 @@ class User(Base):
     password:Mapped[str]=mapped_column(nullable=False)
     def __repr__(self):
         return f"User(id={self.id}, username={self.username}, email={self.email})"
-
-
 
 Base.metadata.create_all(engine)
 
