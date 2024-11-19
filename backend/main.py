@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from chat.websocket import chat_app  # Assuming chat is the WebSocket handler
 from auth.auth import auth_router
+from chat.storechat import store_chat
 app = FastAPI()
 
 # CORS middleware setup
@@ -16,3 +17,4 @@ app.add_middleware(
 
 app.include_router(auth_router,prefix="/auth")
 app.include_router(chat_app,prefix="/ws")
+app.include_router(store_chat,prefix="/storechat")

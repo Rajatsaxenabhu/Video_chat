@@ -1,7 +1,8 @@
-export interface UserScheme {
-  sender_user_id: string;
-  target_user_id:string;
+export interface MsgScheme {
+  timestamp: string;
   message: string;
+  sender_ID: string;
+  receiver_ID: string;
 }
 
 export class WebSocketService {
@@ -17,13 +18,16 @@ export class WebSocketService {
 
   // Connect to WebSocket
   connect(): void {
+    // Check if WebSocket is already connected
     if (this.ws) {
       console.warn('WebSocket is already connected.');
       return;
     }
 
+    // Create a new WebSocket instance and connect to the backend WebSocket server
     this.ws = new WebSocket(this.url);
 
+    // When WebSocket is opened, execute the provided callback
     this.ws.onopen = () => {
       console.log('Connected to WebSocket');
       if (this.onOpenCallback) {
@@ -31,6 +35,7 @@ export class WebSocketService {
       }
     };
 
+    // When WebSocket is closed, execute the provided callback
     this.ws.onclose = (event) => {
       console.log(`WebSocket closed: ${event.code}`);
       if (this.onCloseCallback) {
@@ -38,12 +43,16 @@ export class WebSocketService {
       }
     };
 
+    // Handle WebSocket errors
     this.ws.onerror = (error) => {
       console.error('WebSocket Error:', error);
     };
 
+    // Handle incoming messages from the backend server
     this.ws.onmessage = (event) => {
+      console.log('Received message from backendwe :', event.data);
       if (this.onMessageCallback) {
+        // Pass the backend message to the onMessage handler
         this.onMessageCallback(event.data);
       }
     };
@@ -59,19 +68,22 @@ export class WebSocketService {
     this.onCloseCallback = callback;
   }
 
-  // Send message
-  sendMessage(message: UserScheme): void {
+  // Send message to backend WebSocket server
+  sendMessage(message: MsgScheme): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      // Send a message in JSON format to the backend WebSocket server
       this.ws.send(JSON.stringify(message));
     } else {
       console.error('WebSocket is not open');
     }
   }
 
-  // Register a handler for incoming messages
-  onMessage(callback: (message: string) => void): void {
+  // Register a handler for incoming messages from the backend
+  onMessage(callback: (message:string) => void): void {
     this.onMessageCallback = callback;
   }
+
+  // Close the WebSocket connection
   close(): void {
     if (this.ws) {
       this.ws.close();

@@ -10,7 +10,7 @@ from datetime import datetime
 
 from sqlalchemy import create_engine
 # Example MySQL connection string
-engine = create_engine("mysql+pymysql://root:rootpassword@localhost:3306/mysql")
+engine = create_engine("mysql+pymysql://root:rootpassword@localhost:3306/kali")
 class Base(DeclarativeBase):
     pass
 class User(Base):

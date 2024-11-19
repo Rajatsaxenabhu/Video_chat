@@ -111,7 +111,7 @@ async def detail(request: Request, users: UserDetails, db: Session = Depends(get
     user_dicts = []
     for user in users_list:
         user_dict = {c.key: getattr(user, c.key) for c in class_mapper(User).columns}
-        user_dict.pop("password", None)  # Remove the password field
+        user_dict.pop("password", None)  
         user_dicts.append(user_dict)
 
     return JSONResponse(content={"users": user_dicts}, status_code=200)

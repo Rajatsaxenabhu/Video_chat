@@ -1,6 +1,7 @@
 // src/userlist.tsx
 import React from 'react';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 interface User {
   id: string;
   username: string;
@@ -13,9 +14,11 @@ interface UserListProps {
 }
 
 const UserList: React.FC<UserListProps> = ({ users, onSelectUser }) => {
+  const owner=useSelector((state: RootState) => state.auth.sender_name);
   return (
     <div className="p-4 my-4 bg-indigo-50 shadow-md rounded-lg  ">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 scrollbar-hide">Users</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 scrollbar-hide">
+        Hi: {owner}</h2>
 
       {/* Handle the case when there are no users */}
       {users.length === 0 ? (

@@ -8,6 +8,8 @@ import { store, persistor } from './redux/store';
 import AuthForm from "./page/login_signup"
 import {Dashboard} from "./page/Dashboard"
 import  PrivateRoute from "./hooks/protected"
+import VideoCall from './components/videocall/interface';
+import Videomain from './components/videocall/video_main';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
         <Route element={< PrivateRoute/>}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
+        <Route path="/check" element={<Videomain/>} />
       </Routes>
     </BrowserRouter>    
     </PersistGate>

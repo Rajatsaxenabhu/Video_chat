@@ -14,7 +14,7 @@ passlib
 fastapi
 python-socketio
 uvicorn
-redis
+aioredis
 psycopg2
 
 

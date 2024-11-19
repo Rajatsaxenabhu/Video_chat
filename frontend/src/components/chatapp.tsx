@@ -60,7 +60,7 @@ const ChatApp: React.FC = () => {
       setNewMessage(''); // Clear input
     } else {
       console.error('WebSocket is not connected.');
-      alert('Unable to send message. WebSocket is not connected.');
+
     }
   };
 

@@ -4,3 +4,5 @@ uvicorn main:app --reload
 
 docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=rootpassword -p 3306:3306 -d mysql:latest
 
+docker run -d  --name redis-container -p 6379:6379 redis:6.2  redis-server  --requirepass "rajat"  --user "rajat" --database 1
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { WebSocketService, UserScheme } from '../../hooks/websocket';
+import { WebSocketService, MsgScheme } from '../../hooks/websocket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import axios from 'axios';
@@ -13,19 +13,19 @@ interface User {
 }
 
 const ChatApp: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [newMessage, setNewMessage] = useState<string>('');
+  const [newMessage, setNewMessage] = useState<MsgScheme>({ receiver_ID: '' ,timestamp: '', message: '', sender_ID: '', });
+  const [messages, setMessages] = useState<MsgScheme[]>([]);
   const [targetUser, setTargetUser] = useState<User | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const senderUserId = useSelector((state: RootState) => state.auth.sender_id);
+  const senderUserId: string = useSelector((state: RootState) => state.auth.sender_id);
   const wsService = useRef<WebSocketService | null>(null);
   const [users, setUsers] = useState<User[]>([]);
 
-  // Fetch user data when the component mounts
   useEffect(() => {
     const getData = async () => {
       try {
-        const senderUserIdStr = String(senderUserId);
+        // this is for the side bar 
+        let senderUserIdStr = String(senderUserId);
         const resp = await axios.post("http://localhost:8000/auth/detail", { id: senderUserIdStr });
         setUsers(resp.data.users);
       } catch (error) {
@@ -34,22 +34,35 @@ const ChatApp: React.FC = () => {
     };
     getData();
 
-    // Initialize WebSocket service
-    wsService.current = new WebSocketService(`ws://127.0.0.1:8000/ws/chat?user_id=${senderUserId}`);
+    // WebSocket connection
+    let senderUserIdStr = String(senderUserId);
+    wsService.current = new WebSocketService(`ws://127.0.0.1:8000/ws/chat?user_id=${senderUserIdStr}`);
     wsService.current.connect();
 
     // WebSocket event handlers
     wsService.current.onMessage((message: string) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      try {
+        const parsedMessage: MsgScheme= JSON.parse(message);
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages, parsedMessage];
+          console.log(updatedMessages); 
+          return updatedMessages;
+        });
+        //update the message
+        console.log(messages)
+      } catch (err) {
+        console.error('Failed to parse message:', err);
+      }
     });
+
     wsService.current.onOpen(() => {
       setIsConnected(true);
     });
+
     wsService.current.onClose(() => {
       setIsConnected(false);
     });
 
-    // Cleanup WebSocket connection on component unmount
     return () => {
       if (wsService.current) {
         wsService.current.close();
@@ -57,19 +70,23 @@ const ChatApp: React.FC = () => {
     };
   }, [senderUserId]);
 
- 
-  const sendMessage = async (message: string) => {
-    if (wsService.current && isConnected && targetUser) {
-      const form: UserScheme = {
-        sender_user_id: senderUserId,
-        target_user_id: String(targetUser.id),
+  const sendMessage = (message: string) => {
+    if (wsService.current && targetUser) {
+      const form: MsgScheme = {
+        timestamp: '',
         message: message,
+        sender_ID: String(senderUserId),
+        receiver_ID: String(targetUser.id),
       };
-      wsService.current.sendMessage(form);
-      setMessages((prevMessages) => [...prevMessages, `You: ${message}`]);
-    } else {
-      console.error('WebSocket is not connected or no target user selected.');
-      alert('Unable to send message. WebSocket is not connected or no target user selected.');
+      try {
+        setMessages((prevMessages) => [...prevMessages, form]);
+        wsService.current.sendMessage(form);
+        console.log("sending message to websocket ",form);
+        console.log("update message to render ",messages);
+      } catch (err) {
+        console.error('Error sending message:', err);
+      }
+      setNewMessage({ timestamp: '', message: '', sender_ID: '', receiver_ID: '' }); // Clear input field
     }
   };
 
@@ -87,7 +104,16 @@ const ChatApp: React.FC = () => {
       {/* Right Side - Chat Window */}
       <div className="flex-1 p-4">
         {targetUser ? (
-          <ChatWindow selectedUser={targetUser.username} sendMessage={sendMessage} />
+          <ChatWindow
+            selectedUser={targetUser.username}
+            selectedUser_id={String(senderUserId)}
+            target_id={String(targetUser.id)}
+            messages={messages}
+            setMessages={setMessages}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            sendMessage={sendMessage}
+          />
         ) : (
           <div className="text-center text-gray-500">Select a user to start chatting</div>
         )}
