@@ -5,12 +5,18 @@ export interface MsgScheme {
   receiver_ID: string;
 }
 
+export interface UserStatusMessage {
+  username: string;
+  status: 'online' | 'offline';
+}
+
 export class WebSocketService {
   private ws: WebSocket | null = null;
   private url: string;
   private onMessageCallback: ((message: string) => void) | null = null;
   private onOpenCallback: (() => void) | null = null;
   private onCloseCallback: (() => void) | null = null;
+  private onUserStatusChangeCallback: ((status: UserStatusMessage) => void) | null = null;
 
   constructor(url: string) {
     this.url = url;
@@ -36,24 +42,35 @@ export class WebSocketService {
     };
 
     // When WebSocket is closed, execute the provided callback
-    this.ws.onclose = (event) => {
-      console.log(`WebSocket closed: ${event.code}`);
+    this.ws.onclose = () => {
       if (this.onCloseCallback) {
         this.onCloseCallback();
       }
     };
-
-    // Handle WebSocket errors
     this.ws.onerror = (error) => {
       console.error('WebSocket Error:', error);
     };
 
     // Handle incoming messages from the backend server
     this.ws.onmessage = (event) => {
-      console.log('Received message from backendwe :', event.data);
+      console.log('Received message from backend:', event.data);
+      
+      // Delegate to the message callback (if exists)
       if (this.onMessageCallback) {
-        // Pass the backend message to the onMessage handler
         this.onMessageCallback(event.data);
+      }
+
+      // Handle user status changes (if exists)
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'user_status' && this.onUserStatusChangeCallback) {
+          this.onUserStatusChangeCallback({
+            username: data.username,
+            status: data.status,
+          });
+        }
+      } catch (e) {
+        console.error('Failed to parse message:', e);
       }
     };
   }
@@ -75,12 +92,18 @@ export class WebSocketService {
       this.ws.send(JSON.stringify(message));
     } else {
       console.error('WebSocket is not open');
+      
     }
   }
 
   // Register a handler for incoming messages from the backend
-  onMessage(callback: (message:string) => void): void {
+  onMessage(callback: (message: string) => void): void {
     this.onMessageCallback = callback;
+  }
+
+  // Register a handler for user status changes (online/offline)
+  onUserStatusChange(callback: (status: UserStatusMessage) => void): void {
+    this.onUserStatusChangeCallback = callback;
   }
 
   // Close the WebSocket connection

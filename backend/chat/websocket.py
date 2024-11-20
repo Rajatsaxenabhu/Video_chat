@@ -14,6 +14,7 @@ async def chat(websocket: WebSocket, user_id: str):
     print('connection start')
     await manager.connect(websocket, user_id)
 
+    
     try:
         while True:
             data = await websocket.receive_text()

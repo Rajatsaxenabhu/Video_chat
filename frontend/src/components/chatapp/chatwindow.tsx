@@ -9,20 +9,16 @@ interface ChatWindowProps {
   target_id: string;
   messages: MsgScheme[];
   setMessages: React.Dispatch<React.SetStateAction<MsgScheme[]>>;
-  newMessage: MsgScheme;
-  setNewMessage: React.Dispatch<React.SetStateAction<MsgScheme>>;
   sendMessage: (message: string) => void;
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, target_id, messages, setMessages, newMessage, setNewMessage, sendMessage }) => {
-  const [preMessage, setPreMessage] = useState<MsgScheme[]>([]);
-  const [newChatMessage,setNewChatMessage] = useState<string>('');
+const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, target_id, messages, setMessages, sendMessage }) => {
+  const [newChatMessage, setNewChatMessage] = useState<string>('');
 
   // Function to send the message
   const handleSendMessage = () => {
     sendMessage(newChatMessage);
-    setNewChatMessage('');
-    // Clear input field after sending
+    setNewChatMessage(''); // Clear input field after sending
   };
 
   // Fetch previous messages on initial load
@@ -41,25 +37,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, 
     };
     getData();
   }, [target_id, selectedUser_id]);
-  //data cominf to here from abcekdn redis
-  console.log('first prev msg', messages);
 
   return (
-    <div className="h-full w-full mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-      <div className="p-4 border-b-2 border-gray-200">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Chat with {selectedUser}
-        </h2>
+    <div className="h-full w-full mx-auto bg-white rounded-lg shadow-xl overflow-hidden flex flex-col">
+      <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+        <h2 className="text-2xl font-semibold">{`Chat with ${selectedUser}`}</h2>
       </div>
-      <div className="flex-1 p-4 overflow-auto bg-gray-50">
-        <div className="space-y-4">
+      <div className="flex-1 p-6 overflow-auto bg-gray-50">
+        <div className="space-y-6">
           {/* Display messages */}
           {messages.map((msgg, index) => {
             const isUserMessage = msgg.sender_ID === selectedUser_id;
             return (
               <div key={index} className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-xs p-3 rounded-lg ${isUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}
+                  className={`max-w-xs p-4 rounded-lg shadow-md transition-all duration-200 ${isUserMessage ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-800'}`}
                 >
                   {msgg.message}
                 </div>
@@ -76,16 +68,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, 
           onChange={(e) => setNewChatMessage(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
           placeholder="Type a message"
-          className="flex-1 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
         />
         <button
           onClick={handleSendMessage}
-          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
         >
           <FaPaperPlane />
         </button>
         <button
-          className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="bg-green-500 text-white p-3 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
         >
           <FaVideo />
         </button>

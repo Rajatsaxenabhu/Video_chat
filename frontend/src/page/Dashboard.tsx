@@ -2,7 +2,7 @@ import React from 'react'
 import MainChat from '../components/chatapp/mainChat'
 export const Dashboard = () => {
   return (
-    <div>
+    <div className='h-screen w-full '>
       <MainChat/>
     </div>
   )

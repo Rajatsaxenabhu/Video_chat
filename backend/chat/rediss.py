@@ -8,6 +8,9 @@ class RedisClient:
     def __init__(self):
         # Initialize Redis connection
         self.redis = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+    
+    def set_status(self, key: str, status: str):
+        self.redis.set(key, status)
 
     def store_message(self, sender_id: str, receiver_id: str, message: str):
         timestamp = datetime.now().timestamp()
