@@ -35,5 +35,5 @@ class RedisClient:
         messages_receiver_to_sender = self.redis.zrevrange(key2, 0, limit - 1, withscores=True)
         messages = messages_receiver_to_sender + messages_sender_to_receiver
         sorted_data = sorted(messages, key=lambda x: json.loads(x[0])['timestamp'], reverse=False)
-        result = [{'message': json.loads(x[0])['message'], 'sender_ID': json.loads(x[0])['sender_id'], 'receiver_ID': json.loads(x[0])['receiver_id'], 'timestamp': x[1]} for x in sorted_data]
+        result = [{'message': json.loads(x[0])['message'], 'sender_ID': json.loads(x[0])['sender_id'], 'receiver_ID': json.loads(x[0])['receiver_id']} for x in sorted_data]
         return result

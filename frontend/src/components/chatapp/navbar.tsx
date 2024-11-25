@@ -13,7 +13,6 @@ const Navbar: React.FC = () => {
     dispatch(logout()); // Dispatch logout action (adjust depending on your redux setup)
     navigate('/');
   };
-
   return (
     <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex justify-between items-center text-white">
       {/* Left Section - Logo or Title */}

@@ -26,7 +26,7 @@ const UserList: React.FC<UserListProps> = ({ users, onSelectUser, getUserStatus 
               <li
                 key={user.id}
                 onClick={() => onSelectUser(user)} // Handle user click
-                className="flex items-center cursor-pointer p-3 rounded-lg hover:bg-base-300 transition duration-200 border-2 border-gray-300 hover:shadow-xl"
+                className="flex items-center cursor-pointer p-3 rounded-lg hover:bg-base-300 transition duration-200 border-2 border-gray-300 hover:shadow-xl bg-red-50"
               >
                 {/* User profile picture */}
                 <div className="relative">
