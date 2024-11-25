@@ -1,8 +1,10 @@
 import MainChat from '../components/chatapp/mainChat'
 export const Dashboard = () => {
   return (
-    <div className='h-screen w-full '>
-      <MainChat/>
+    <div style={{ backgroundImage: "url('./src/assets/chat_bg.jpg')" }}>
+    <div className=' '>
+  <MainChat />
+</div>
     </div>
   )
 }

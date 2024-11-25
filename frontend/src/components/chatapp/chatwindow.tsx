@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FaVideo, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
 import { MsgScheme } from '../../hooks/websocket';
@@ -13,10 +13,12 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, target_id, messages, setMessages, sendMessage }) => {
-  const [newChatMessage, setNewChatMessage] = useState<string>('');
+  const [newChatMessage, setNewChatMessage] = useState<string>(''); 
+  const messagesEndRef = useRef<HTMLDivElement | null>(null); // Reference for auto-scrolling
 
   // Function to send the message
   const handleSendMessage = () => {
+    if (!newChatMessage) { return; }
     sendMessage(newChatMessage);
     setMessages((prevMessages) => [...prevMessages, { message: newChatMessage, sender_ID: selectedUser_id, receiver_ID: target_id }]);
     setNewChatMessage(''); // Clear input field after sending
@@ -39,37 +41,60 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, 
     getData();
   }, [target_id, selectedUser_id]);
 
+  // Scroll to bottom whenever the messages array changes
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   return (
-    <div className="h-full w-full mx-auto bg-white rounded-lg shadow-xl overflow-hidden flex flex-col pb-10">
-      <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+    <div className="h-full w-full mx-auto rounded-lg shadow-xl overflow-hidden flex flex-col bg-gradient-to-br from-indigo-100 to-blue-200"> {/* Background gradient */}
+      {/* Top bar for chat title */}
+      <div className="p-6 overflow-hidden bg-opacity-90 bg-gradient-to-r from-green-400 to-blue-500 text-white"> {/* Gradient for top bar */}
         <h2 className="text-2xl font-semibold">{`Chat with ${selectedUser}`}</h2>
       </div>
-      <div className="flex-1 p-6 overflow-auto bg-gray-50">
-        <div className="space-y-6">
+
+      {/* Main chat content */}
+      <div className="flex-1 overflow-auto bg-opacity-75 bg-gray-50 "
+      style={{ backgroundImage: "url('./src/assets/chat_inside.jpg')" }}> {/* Background for messages area */}
+        <div className="space-y-3 mr-10">
           {/* Display messages */}
           {messages.map((msgg, index) => {
             const isUserMessage = msgg.sender_ID === selectedUser_id;
             return (
-              <div key={index} className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-xs p-4 rounded-lg shadow-md transition-all duration-200 ${isUserMessage ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-800'}`}
-                >
-                  {msgg.message}
+              <div key={index} className={`chat ${isUserMessage ? 'chat-end' : 'chat-start'} ml-4`}>
+                <div className="chat-image avatar">
+                  <div className="w-12 rounded-full">
+                    {/* Assuming the user has a default avatar; this can be dynamic */}
+                    <img
+                      alt="User Avatar"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
                 </div>
+                
+                <div className={`chat-bubble ${isUserMessage ? 'bg-blue-300 text-white' : 'bg-gray-300 text-gray-800'}`}>{msgg.message}</div> {/* Chat bubble background */}
+                
+               
               </div>
             );
           })}
         </div>
+
+        {/* Reference to scroll to the bottom */}
+        <div ref={messagesEndRef} />
       </div>
+
       {/* Input and buttons */}
-      <div className="p-4 border-t-2 border-gray-200 flex items-center space-x-4">
+      <div className="p-4 border-t-2 border-gray-200 flex items-center space-x-6 bg-gradient-to-r from-blue-100 to-indigo-200 mr-20"> {/* Background for input area */}
         <input
           type="text"
           value={newChatMessage}
           onChange={(e) => setNewChatMessage(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
           placeholder="Type a message"
-          className="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className="flex-1 p-3 rounded-lg border border-gray-300 bg-white text-gray-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all "
         />
         <button
           onClick={handleSendMessage}

@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
   return (
-    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex justify-between items-center text-white">
+    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex justify-between items-center text-white position-sticky">
       {/* Left Section - Logo or Title */}
       <div className="text-lg font-bold">
         <span className="text-white">ChatApp</span>

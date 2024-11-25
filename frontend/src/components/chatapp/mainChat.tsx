@@ -85,9 +85,9 @@ const ChatApp: React.FC = () => {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Navbar />
-      <div className="flex h-full bg-gradient-to-r from-indigo-500 to-purple-600">
+      <div className="flex h-full">
         {/* Left Side - User List */}
-        <div className="w-1/3 bg-white p-4 shadow-lg rounded-l-lg overflow-y-auto">
+        <div className="w-1/3  p-4 shadow-lg rounded-l-lg overflow-y-auto">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">All Users</h2>
           <UserList
             users={users}
@@ -97,7 +97,8 @@ const ChatApp: React.FC = () => {
         </div>
     
         {/* Right Side - Chat Window */}
-        <div className="flex-1 p-6 bg-gray-100 rounded-r-lg overflow-hidden ">
+        <div className="flex-1  bg-gray-100 rounded-r-lg overflow-hidden"
+        style={{ backgroundImage: "url('./src/assets/chat_bg.jpg')" }}>
           {targetUser ? (
             <ChatWindow
               selectedUser={targetUser.username}
@@ -108,7 +109,7 @@ const ChatApp: React.FC = () => {
               sendMessage={sendMessage}
             />
           ) : (
-            <div className="text-center text-gray-500">Select a user to start chatting</div>
+            <div className="text-center text-gray-500 p-4 font-semibold">Select a user to start chatting</div>
           )}
         </div>
       </div>
