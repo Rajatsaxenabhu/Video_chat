@@ -13,7 +13,7 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods (e.g., GET, POST)
     allow_headers=["*"],  # Allows all headers
 )
-sio = socketio_mount(app=app,async_mode="asgi",mount_path="/socket.io/",socketio_path="socket.io",cors_allowed_origins="*")# CORS middleware setup
+sio = socketio_mount(app=app,async_mode="asgi",mount_path="/socket.io/",socketio_path="socket.io",cors_allowed_origins=["*","http://localhost:5173"])# CORS middleware setup
 
 
 app.include_router(auth_router,prefix="/auth")

@@ -11,7 +11,7 @@ interface User {
   id: string;
   username: string;
   is_active: boolean;
-  profilePic: string;
+  images: string;
 }
 
 const ChatApp: React.FC = () => {
@@ -36,6 +36,7 @@ const ChatApp: React.FC = () => {
       try {
         const senderUserIdStr = String(senderUserId);
         const resp = await axios.post("http://localhost:8000/auth/detail", { id: senderUserIdStr });
+        console.log(resp.data)
         setUsers(resp.data.users);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -84,7 +85,7 @@ const ChatApp: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <Navbar />
+      <Navbar user_id={String(senderUserId)}/>
       <div className="flex h-full">
         {/* Left Side - User List */}
         <div className="w-1/3  p-4 shadow-lg rounded-l-lg overflow-y-auto">

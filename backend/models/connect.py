@@ -19,6 +19,7 @@ class User(Base):
     username = mapped_column(String(30), nullable=False)
     email = mapped_column(String(30), nullable=False, unique=True)
     password = mapped_column(String(70), nullable=False)
+    images=mapped_column(String(100), nullable=True)
     is_active = mapped_column(Boolean, default=False)
 
     def to_dict(self):
@@ -28,7 +29,8 @@ class User(Base):
             'username': self.username,
             'email': self.email,
             'password': self.password,
-            'is_active': self.is_active
+            'is_active': self.is_active,
+            'images':self.images
         }
 
 Base.metadata.create_all(engine)

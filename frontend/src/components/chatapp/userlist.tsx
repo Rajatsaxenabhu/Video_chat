@@ -3,7 +3,7 @@ import React from "react";
 interface User {
   id: string;
   username: string;
-  profilePic: string;
+  images: string;
   is_active: boolean; // Assuming each user has a profile picture URL
 }
 
@@ -31,9 +31,9 @@ const UserList: React.FC<UserListProps> = ({ users, onSelectUser, getUserStatus 
                 {/* User profile picture */}
                 <div className="relative">
                   <img
-                    src={user.profilePic || "/avatar.png"} // Default fallback avatar
+                    src={user.images || "/avatar.png"} // Default fallback avatar
                     alt={user.username}
-                    className="w-11 h-12 rounded-full object-cover"
+                    className="w-12 h-12 rounded-full object-cover"
                   />
                 </div>
 
@@ -45,11 +45,11 @@ const UserList: React.FC<UserListProps> = ({ users, onSelectUser, getUserStatus 
                       getUserStatus(user.id) === "online" ? "text-green-500" : "text-red-500"
                     }`}
                   >
-                    <span
+                    {/* <span
                       className={`inline-block w-2.5 h-2.5 rounded-full ${
                         getUserStatus(user.id) === "online" ? "bg-green-500" : "bg-red-500"
                       }`}
-                    ></span>
+                    ></span> */}
                   </p>
                 </div>
               </li>

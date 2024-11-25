@@ -42,6 +42,10 @@ class UserCheck(BaseModel):
 
 class UserDetails(BaseModel):
     id: str
+
+class UserImages(BaseModel):
+    images: str
+    id: str
 # Function to generate a JWT token
 
 @auth_router.post("/signup")
@@ -115,3 +119,14 @@ async def detail(request: Request, users: UserDetails, db: Session = Depends(get
         user_dicts.append(user_dict)
 
     return JSONResponse(content={"users": user_dicts}, status_code=200)
+
+
+@auth_router.post("/images")
+async def images(request: Request, users: UserImages, db: Session = Depends(get_db)):
+    val=select(User).where(User.id == users.id)
+    existing_user = db.execute(val).scalar()
+    if existing_user is None:
+        return JSONResponse(content={"message": "User not found"}, status_code=404)
+    existing_user.images = users.images
+    db.commit()
+    return JSONResponse(content={"message": "Images updated successfully"}, status_code=200)

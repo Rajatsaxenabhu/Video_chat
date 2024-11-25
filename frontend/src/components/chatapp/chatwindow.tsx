@@ -67,7 +67,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, 
                 <div className="chat-image avatar">
                   <div className="w-12 rounded-full">
                     {/* Assuming the user has a default avatar; this can be dynamic */}
-                    <img
+                    <img 
                       alt="User Avatar"
                       src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                     />
