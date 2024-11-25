@@ -18,6 +18,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, 
   // Function to send the message
   const handleSendMessage = () => {
     sendMessage(newChatMessage);
+    setMessages((prevMessages) => [...prevMessages, { message: newChatMessage, sender_ID: selectedUser_id, receiver_ID: target_id }]);
     setNewChatMessage(''); // Clear input field after sending
   };
 
@@ -39,7 +40,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedUser, selectedUser_id, 
   }, [target_id, selectedUser_id]);
 
   return (
-    <div className="h-full w-full mx-auto bg-white rounded-lg shadow-xl overflow-hidden flex flex-col">
+    <div className="h-full w-full mx-auto bg-white rounded-lg shadow-xl overflow-hidden flex flex-col pb-10">
       <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
         <h2 className="text-2xl font-semibold">{`Chat with ${selectedUser}`}</h2>
       </div>

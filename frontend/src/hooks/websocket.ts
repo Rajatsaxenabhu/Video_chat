@@ -14,7 +14,7 @@ interface UserStatusMessage {
 export class WebSocketClient {
   private socket: Socket;
 
-  constructor(serverUrl: string) {
+  constructor(serverUrl: string,private onMessageReceived: (msg: MsgScheme) => void) {
     this.socket = io(serverUrl,{ transports: ["websocket"] });
     this.setupListeners();
   }
@@ -37,6 +37,7 @@ export class WebSocketClient {
     // Listen for incoming messages
     this.socket.on('message', (msg: MsgScheme) => {
       console.log('Received message:', msg);
+      this.onMessageReceived(msg);
     });
 
     // Listen for user status updates

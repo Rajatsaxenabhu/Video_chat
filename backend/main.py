@@ -37,7 +37,7 @@ async def sendMessage(user_id, message):
     sid = connected_clients.get(message.get("receiver_ID"))
     print("sender id",user_id,"receiver id",sid)
     if sid is not None:
-        await sio.emit("message", message.get("message"), room=sid)
+        await sio.emit("message", message, room=sid)
     r.store_message(message.get("sender_ID"), message.get("receiver_ID"), message.get("message"))
 
 

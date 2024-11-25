@@ -25,6 +25,10 @@ const ChatApp: React.FC = () => {
   // WebSocket client initialization
   const wsClient = useRef<WebSocketClient | null>(null);
   let socket = wsClient.current?.getSocket();
+  const handleIncomingMessage = (msg: MsgScheme) => {
+    setMessages((prevMessages) => [...prevMessages, msg]);
+    console.log("New message received:", msg);
+  };
 
   useEffect(() => {
     // Fetch initial user data
@@ -38,18 +42,21 @@ const ChatApp: React.FC = () => {
       }
     };
     getData();
-
-    // Initialize WebSocket client
-    wsClient.current = new WebSocketClient('http://localhost:8000/');
+    if (!wsClient.current) {
+    wsClient.current = new WebSocketClient('http://localhost:8000/', handleIncomingMessage);
     socket = wsClient.current.getSocket();
     socket.on('connect', () => {
       setIsConnected(true);
       socket?.emit('sendUserData',String(senderUserId));
       console.log('Connected to WebSocket server');
     });
-
+  }
+  return () => {
+    wsClient.current?.getSocket().disconnect();
+    wsClient.current = null;
+  };
     //
-  }, [senderUserId]);
+  }, []);
 
   // Handle user click to set target user
   const handleUserClick = (user: User) => {
@@ -74,6 +81,7 @@ const ChatApp: React.FC = () => {
     }
   };
 
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Navbar />
@@ -89,7 +97,7 @@ const ChatApp: React.FC = () => {
         </div>
     
         {/* Right Side - Chat Window */}
-        <div className="flex-1 p-6 bg-gray-100 rounded-r-lg overflow-hidden">
+        <div className="flex-1 p-6 bg-gray-100 rounded-r-lg overflow-hidden ">
           {targetUser ? (
             <ChatWindow
               selectedUser={targetUser.username}
