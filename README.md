@@ -18,8 +18,11 @@ ChatApp is a real-time messaging application built with **React** on the fronten
 - **Database**: PostgreSQL (or any SQL database)
 - **Security**: bcrypt for password hashing, HTTPS
 
+
+Here the demo Video url:
+    "https://drive.google.com/file/d/1tSFXO8SUy-PSA1vOJ0Hn2Dav9Uu8SKEc/view?usp=sharing"
+
 ![Alt text](./images/Screenshot%20(2).png)
 ![Alt text](./images/Screenshot%20(3).png)
 ![Alt text](./images/Screenshot%20(4).png)
 ![Alt text](./images/Screenshot%20(6).png)
-
