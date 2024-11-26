@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +25,9 @@ const Navbar: React.FC<NavProps> = ({ user_id }) => {
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev); // Toggle modal visibility
   };
+  useEffect(() => {
+    setIsModalOpen(false); // Close the modal when the component mounts
+  }, [user_image]);
 
   return (
     <>

@@ -1,19 +1,22 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from auth.auth import auth_router
 from chat.storechat import store_chat
 from chat.sockets import socketio_mount
 from chat.rediss import RedisClient
+from config.configs import settings
+seting=settings()
+
 r=RedisClient()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*", "http://localhost:5173"],  # Allows all origins
+    allow_origins=[seting.HOSTS],  # Allows all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods (e.g., GET, POST)
     allow_headers=["*"],  # Allows all headers
 )
-sio = socketio_mount(app=app,async_mode="asgi",mount_path="/socket.io/",socketio_path="socket.io",cors_allowed_origins=["*","http://localhost:5173"])# CORS middleware setup
+sio = socketio_mount(app=app,async_mode="asgi",mount_path="/socket.io/",socketio_path="socket.io",cors_allowed_origins=[seting.HOSTS])# CORS middleware setup
 
 
 app.include_router(auth_router,prefix="/auth")

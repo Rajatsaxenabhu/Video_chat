@@ -53,7 +53,7 @@ async def signup(request: Request, user: UserCreate,response: Response,db: Sessi
     val = select(User).where((User.email == user.email))
     existing_user = db.execute(val).scalar()
     if existing_user is not None:
-        raise HTTPException(status_code=400, detail="User already exists")
+        return JSONResponse(content={"message": "User already exists"}, status_code=300)
     hashed_password = pwd_context.hash(user.password)
     new_user = User(username=user.username, email=user.email, password=hashed_password)
     db.add(new_user)

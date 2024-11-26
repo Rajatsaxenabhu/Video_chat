@@ -47,6 +47,7 @@ const UploadApp: React.FC<UploadAppProps> = ({ user_id }) => {
       if (uploadResponse.status === 200) {
         console.log(result.url);
         disp(setUserImage({user_image:result.url}));
+        
         alert("Image uploaded successfully!");
       } else {
         alert("Error uploading image to the server.");

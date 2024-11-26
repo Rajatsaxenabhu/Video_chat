@@ -1,13 +1,15 @@
 import redis
-from typing import List, Tuple
+from typing import List
 from datetime import datetime
 from typing import List
 import json
+from config.configs import settings
+seting=settings()
 
 class RedisClient:
     def __init__(self):
         # Initialize Redis connection
-        self.redis = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+        self.redis = redis.StrictRedis(host=seting.REDIS_HOST,port=seting.REDIS_PORT,db=seting.REDIS_DB,decode_responses=True)
     
     def set_status(self, key: str, status: str):
         self.redis.set(key, status)

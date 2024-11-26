@@ -7,10 +7,11 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy import Integer, String, DateTime, Boolean, func
 from datetime import datetime
-
+from config.configs import settings
 from sqlalchemy import create_engine
+seting=settings()
 # Example MySQL connection string
-engine = create_engine("mysql+pymysql://root:rootpassword@localhost:3306/kali")
+engine = create_engine(seting.SQL_ADDRESS)
 class Base(DeclarativeBase):
     pass
 class User(Base):
