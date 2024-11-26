@@ -21,6 +21,8 @@ const ChatApp: React.FC = () => {
   const senderUserId: string = useSelector((state: RootState) => state.auth.sender_id);
   const [users, setUsers] = useState<User[]>([]);
   const [userStatus, setUserStatus] = useState<{ [key: string]: string }>({});
+  const sender_image: string = useSelector((state: RootState) => state.auth.user_image);
+  const sender_name: string = useSelector((state: RootState) => state.auth.sender_name);
   
   // WebSocket client initialization
   const wsClient = useRef<WebSocketClient | null>(null);
@@ -86,10 +88,17 @@ const ChatApp: React.FC = () => {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Navbar user_id={String(senderUserId)}/>
-      <div className="flex h-full">
+      <div className="flex h-full border-gray-300 border-t">
         {/* Left Side - User List */}
         <div className="w-1/3  p-4 shadow-lg rounded-l-lg overflow-y-auto">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">All Users</h2>
+        <div className="relative flex  gap-4 items-center border-b border-white p-4">
+                  <img
+                    src={sender_image || "./src/assets/no.jpg"} // Default fallback avatar
+                    alt={sender_name}
+                    className="w-12 h-12 rounded-full object-cover hover:scale-110 transition duration-300 ease-in-out"
+                  />
+                  {sender_name}
+                </div>
           <UserList
             users={users}
             onSelectUser={handleUserClick}
@@ -98,8 +107,7 @@ const ChatApp: React.FC = () => {
         </div>
     
         {/* Right Side - Chat Window */}
-        <div className="flex-1  bg-gray-100 rounded-r-lg overflow-hidden"
-        style={{ backgroundImage: "url('./src/assets/chat_bg.jpg')" }}>
+        <div className="flex-1  bg-gray-800 rounded-r-lg  border-l border-white">
           {targetUser ? (
             <ChatWindow
               selectedUser={targetUser.username}
@@ -108,6 +116,8 @@ const ChatApp: React.FC = () => {
               messages={messages}
               setMessages={setMessages}
               sendMessage={sendMessage}
+              receiver_image={targetUser.images}
+              sender_image={sender_image}
             />
           ) : (
             <div className="text-center text-gray-500 p-4 font-semibold">Select a user to start chatting</div>

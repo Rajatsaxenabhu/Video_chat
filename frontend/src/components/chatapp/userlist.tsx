@@ -16,6 +16,7 @@ interface UserListProps {
 const UserList: React.FC<UserListProps> = ({ users, onSelectUser, getUserStatus }) => {
   return (
     <div className="p-2 my-4  shadow-md rounded-">
+      {/* the owner iamge */}
       {/* Handle the case when there are no users */}
       {users.length === 0 ? (
         <p className="text-center text-gray-500">No users to chat with.</p>
@@ -26,12 +27,12 @@ const UserList: React.FC<UserListProps> = ({ users, onSelectUser, getUserStatus 
               <li
                 key={user.id}
                 onClick={() => onSelectUser(user)} // Handle user click
-                className="flex bg-yellow-100 items-center cursor-pointer p-3 rounded-lg  hover:bg-yellow-200"
+                className="flex bg-gray-800 items-center cursor-pointer p-3 rounded-lg  hover:bg-gray-900 text-gray-800"
               >
                 {/* User profile picture */}
                 <div className="relative">
                   <img
-                    src={user.images || "/avatar.png"} // Default fallback avatar
+                    src={user.images || "./src/assets/no.jpg"} // Default fallback avatar
                     alt={user.username}
                     className="w-12 h-12 rounded-full object-cover"
                   />
@@ -39,7 +40,7 @@ const UserList: React.FC<UserListProps> = ({ users, onSelectUser, getUserStatus 
 
                 {/* Display username */}
                 <div className=" ml-8  flex-1 text-left">
-                  <div className="font-medium text-lg text-gray-800">{user.username}</div>
+                  <div className="font-medium text-lg text-white">{user.username}</div>
                   <p
                     className={`text-sm ${
                       getUserStatus(user.id) === "online" ? "text-green-500" : "text-red-500"

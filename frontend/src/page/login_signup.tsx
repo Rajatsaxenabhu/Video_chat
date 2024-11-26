@@ -47,6 +47,7 @@ const AuthForm: React.FC = () => {
         dispatch(setCredentials({
           sender_name: response.data.user.username,
           sender_id: response.data.user.id,
+          user_image: response.data.user.images
         }));
         navigate("/dashboard");
       }
@@ -58,7 +59,8 @@ const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50"
+    style={{ backgroundImage: "url('./src/assets/chat_bg.jpg')" }}>
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-800">
           {formType === "login" ? "Login" : "Sign Up"}
@@ -80,7 +82,7 @@ const AuthForm: React.FC = () => {
               type="email"
               id="email"
               placeholder="Enter your email"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block text-gray-600  w-full px-4 py-2 border bg-white   border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -102,7 +104,7 @@ const AuthForm: React.FC = () => {
                 type="text"
                 id="username"
                 placeholder="Enter your username"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 text-gray-600  block w-full px-4 py-2 border bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("username", { required: "Username is required" })}
               />
               {errors.username && <p className="text-red-500 text-xs">{errors.username.message}</p>}
@@ -118,7 +120,7 @@ const AuthForm: React.FC = () => {
               type="password"
               id="password"
               placeholder="Enter your password"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 text-gray-600 block w-full px-4 py-2 border bg-white border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("password", { required: "Password is required" })}
             />
             {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}

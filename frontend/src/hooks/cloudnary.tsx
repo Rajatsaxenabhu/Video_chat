@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { useDispatch } from 'react-redux';
 // Importing Font Awesome icons (for modern UI design)
 import { FaUpload } from "react-icons/fa";
+import { setUserImage } from "../redux/slice/authslice";
 
 // Define the UploadApp component and accept the user_id prop
 interface UploadAppProps {
@@ -11,6 +12,7 @@ interface UploadAppProps {
 
 const UploadApp: React.FC<UploadAppProps> = ({ user_id }) => {
   const [img, setImg] = useState<File | null>(null);
+  const disp=useDispatch();
 
   // Function to handle image upload
   const submitImage = async () => {
@@ -36,7 +38,6 @@ const UploadApp: React.FC<UploadAppProps> = ({ user_id }) => {
       );
 
       const result = await response.json();
-      console.log("this is the oupit in upoad ", user_id);
       // Post the image URL and user_id to your server
       const uploadResponse = await axios.post('http://localhost:8000/auth/images', {
         images: result.url,
@@ -44,6 +45,8 @@ const UploadApp: React.FC<UploadAppProps> = ({ user_id }) => {
       });
 
       if (uploadResponse.status === 200) {
+        console.log(result.url);
+        disp(setUserImage({user_image:result.url}));
         alert("Image uploaded successfully!");
       } else {
         alert("Error uploading image to the server.");
